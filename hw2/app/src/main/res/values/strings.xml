@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Track\'n\'Draw</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Draw</string>
+    <string name="title_emotion_detection">Take Photo</string>
+
+</resources>

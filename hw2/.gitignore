@@ -1,0 +1,26 @@
+# Android Studio
+.idea/
+*.iml
+
+# Build output
+/build/
+/app/build/
+/*.apk
+*.ap_
+
+# Gradle
+.gradle/
+local.properties
+**/build/
+**/bin/
+**/gen/
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+hw2_demo.mp4
+hw2_requirement.pdf

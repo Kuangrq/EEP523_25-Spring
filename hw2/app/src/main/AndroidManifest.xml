@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- TODO: Add camera feature (optional) -->
+    <!-- TODO: Add camera permission -->
+
+    <!-- TODO: Add permissions to access media and storage -->
+    <!-- Hint: include permissions for both read and write, and account for SDK version differences -->
+
+    <!-- TODO: Add feature and permission for step counter (optional for fitness tracking) -->
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:requestLegacyExternalStorage="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SwapSense"
+        tools:targetApi="31">
+
+        <!-- TODO: Declare MainActivity with correct intent-filter to launch the app -->
+
+    </application>
+
+</manifest>
