@@ -9,6 +9,29 @@
     android:paddingHorizontal="8dp"
     android:paddingBottom="60dp">
 
+    <androidx.camera.view.PreviewView
+        android:id="@+id/viewFinder"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp"
+        android:background="#000" />
+
+    <Button
+        android:id="@+id/captureButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="拍照"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/switchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="切换摄像头"
+        android:layout_gravity="center_horizontal" />
+
     <!-- TODO: Add PreviewView to view image -->
     <!-- TODO: Add Button to switch camera -->
     <!-- TODO: Add Button to capture photo -->

@@ -35,8 +35,8 @@ class CameraFragment : Fragment() {
 
     // TODO: Declare variables and handle assignment of values using null cecks
     private lateinit var previewView: PreviewView
-    private var imageCapture: //TODO
-    private var lensFacing = //TODO
+    private var imageCapture: ImageCapture? = null
+    private var lensFacing = CameraSelector.LENS_FACING_BACK
 
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
 
@@ -44,17 +44,24 @@ class CameraFragment : Fragment() {
     private val requiredPermissions: Array<String>
         get() {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                // TODO
+                arrayOf(Manifest.permission.CAMERA)
             } else {
-                // TODO
+                arrayOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        permissionLauncher =  // TODO: Register permissionLauncher with ActivityResultContracts.RequestMultiplePermissions
-
+        permissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            if (permissions.all { it.value }) {
+                startCamera()
+            } else {
+                Toast.makeText(context, "Permission request denied", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onCreateView(
@@ -65,36 +72,107 @@ class CameraFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // TODO: Initialize previewView from layout
+        previewView = view.findViewById(R.id.viewFinder)
+        val captureButton: Button = view.findViewById(R.id.captureButton)
+        val switchButton: Button = view.findViewById(R.id.switchButton)
 
-        // TODO: Set click listener to capture button to trigger takePhoto()
+        captureButton.setOnClickListener {
+            takePhoto()
+        }
 
-        // TODO: Set click listener to switchCamera button to toggle between front and back
+        switchButton.setOnClickListener {
+            lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+                CameraSelector.LENS_FACING_FRONT
+            } else {
+                CameraSelector.LENS_FACING_BACK
+            }
+            startCamera()
+        }
 
-        // TODO: Launch permission request if not all permissions granted, else startCamera()
-
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            permissionLauncher.launch(requiredPermissions)
+        }
     }
 
     private fun allPermissionsGranted(): Boolean {
-        return         // TODO: Implement permission check logic
-
+        return requiredPermissions.all {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                it
+            ) == PackageManager.PERMISSION_GRANTED
+        }
     }
 
     // TODO: Handle permission result fallback (including treating WRITE_EXTERNAL_STORAGE as "granted" on newer Androids)
 
     private fun startCamera() {
-
         val cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
-        cameraProviderFuture.addListener(
-            // TODO: Get CameraProvider, build preview and imageCapture use cases
-            // TODO: Add cameraSelector
-            // TODO: Bind use cases to lifecycle
-        )
+        cameraProviderFuture.addListener({
+            val cameraProvider = cameraProviderFuture.get()
+            val preview = Preview.Builder().build()
+            imageCapture = ImageCapture.Builder().build()
+
+            val cameraSelector = CameraSelector.Builder()
+                .requireLensFacing(lensFacing)
+                .build()
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    viewLifecycleOwner,
+                    cameraSelector,
+                    preview,
+                    imageCapture
+                )
+                preview.setSurfaceProvider(previewView.surfaceProvider)
+            } catch (e: Exception) {
+                Log.e("CameraFragment", "Use case binding failed", e)
+                Toast.makeText(context, "CameraX初始化失败: " + e.message, Toast.LENGTH_LONG).show()
+            }
+        }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     private fun takePhoto() {
-        // TODO: Create ImageCapture, OutputFileOptions, ContentValues(example: displayname,mimetype) variables
-        // TODO: Call imageCapture.takePicture with appropriate callback
-        // TODO: Error Handling
+        val imageCapture = imageCapture
+        if (imageCapture == null) {
+            Toast.makeText(context, "相机未初始化", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val name = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
+            .format(System.currentTimeMillis())
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/SwapSense")
+            }
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions
+            .Builder(
+                requireContext().contentResolver,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                contentValues
+            )
+            .build()
+
+        imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(requireContext()),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    Toast.makeText(context, "Photo saved successfully", Toast.LENGTH_SHORT).show()
+                }
+
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e("CameraFragment", "Photo capture failed: ${exception.message}", exception)
+                    Toast.makeText(context, "Photo capture failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
     }
 }

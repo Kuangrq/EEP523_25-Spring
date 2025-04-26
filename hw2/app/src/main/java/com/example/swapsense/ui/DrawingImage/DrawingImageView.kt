@@ -16,10 +16,12 @@ class DrawingImageView(context: Context, attrs: AttributeSet?) : androidx.appcom
 
     private val path = Path()
     private val paint = Paint().apply {
-        // TODO: Initialize paint with red color, 10f strokeWidth, STROKE style, anti-alias enabled
+        color = Color.RED
+        strokeWidth = 10f
+        style = Paint.Style.STROKE
+        isAntiAlias = true
     }
 
-    // TODO: Initialize with appropriate values
     private var drawCanvas: Canvas? = null
     private var bitmap: Bitmap? = null
     private var bitmapScale = 1f
@@ -28,14 +30,23 @@ class DrawingImageView(context: Context, attrs: AttributeSet?) : androidx.appcom
 
     init {
         setOnTouchListener { _, event ->
-            // Convert screen touch to bitmap coordinates
-            // TODO: Convert event.x and event.y to bitmap coordinates using offset and scale
-            // TODO: Start new path at (x, y)
-            // TODO: Extend path to (x, y) and draw on canvas
-            // TODO: Invalidate the view to trigger redraw
+            val x = (event.x - offsetX) / bitmapScale
+            val y = (event.y - offsetY) / bitmapScale
 
-            // TODO: Finalize drawing, draw path and reset path
-
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    path.reset()
+                    path.moveTo(x, y)
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    path.lineTo(x, y)
+                    invalidate()
+                }
+                MotionEvent.ACTION_UP -> {
+                    drawCanvas?.drawPath(path, paint)
+                    path.reset()
+                }
+            }
             true
         }
     }
@@ -43,34 +54,41 @@ class DrawingImageView(context: Context, attrs: AttributeSet?) : androidx.appcom
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         bitmap?.let { bmp ->
-            // TODO: Compute bitmapScale and offsets to center image in view
+            val viewWidth = width.toFloat()
+            val viewHeight = height.toFloat()
+            val bitmapWidth = bmp.width.toFloat()
+            val bitmapHeight = bmp.height.toFloat()
+
+            bitmapScale = min(viewWidth / bitmapWidth, viewHeight / bitmapHeight)
+            offsetX = (viewWidth - bitmapWidth * bitmapScale) / 2
+            offsetY = (viewHeight - bitmapHeight * bitmapScale) / 2
 
             canvas.save()
-            // TODO: Translate and scale canvas based on computed values
+            canvas.translate(offsetX, offsetY)
+            canvas.scale(bitmapScale, bitmapScale)
 
-            // TODO: Draw the base bitmap
-
-            // TODO: Draw the modified bitmap with paths
+            canvas.drawBitmap(bmp, 0f, 0f, null)
+            canvas.drawPath(path, paint)
 
             canvas.restore()
-
         }
     }
 
     override fun setImageBitmap(bmp: Bitmap?) {
         super.setImageBitmap(bmp)
         bmp?.let {
-            // TODO: Make a mutable copy of the bitmap and create a canvas for drawing
+            bitmap = it.copy(Bitmap.Config.ARGB_8888, true)
+            drawCanvas = Canvas(bitmap!!)
+            invalidate()
         }
-        // TODO: Handle invalidating
     }
 
     fun getBitmapWithDrawing(): Bitmap? {
-        // TODO: Return bitmap with drawing
+        return bitmap
     }
 
     fun setBrushColor(color: Int) {
-        // TODO: Set paint color and refresh view
-
+        paint.color = color
+        invalidate()
     }
 }

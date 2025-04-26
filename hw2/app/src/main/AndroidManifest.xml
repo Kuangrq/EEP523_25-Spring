@@ -10,6 +10,10 @@
 
     <!-- TODO: Add feature and permission for step counter (optional for fitness tracking) -->
 
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -22,7 +26,12 @@
         android:theme="@style/Theme.SwapSense"
         tools:targetApi="31">
 
-        <!-- TODO: Declare MainActivity with correct intent-filter to launch the app -->
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
     </application>
 

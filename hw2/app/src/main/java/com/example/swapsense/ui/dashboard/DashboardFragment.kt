@@ -23,61 +23,125 @@ import android.widget.Toast
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
-
-    // TextViews to display sensor data
     private val binding get() = _binding!!
+
+    private lateinit var sensorManager: SensorManager
+    private var accelerometer: Sensor? = null
+    private var gyroscope: Sensor? = null
+
+    private val accelerometerListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            binding.accelX.text = String.format("X: %.2f", event.values[0])
+            binding.accelY.text = String.format("Y: %.2f", event.values[1])
+            binding.accelZ.text = String.format("Z: %.2f", event.values[2])
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+    }
+
+    private val gyroscopeListener = object : SensorEventListener {
+        override fun onSensorChanged(event: SensorEvent) {
+            binding.gyroX.text = String.format("X: %.2f", event.values[0])
+            binding.gyroY.text = String.format("Y: %.2f", event.values[1])
+            binding.gyroZ.text = String.format("Z: %.2f", event.values[2])
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO
-        // Initialize TextViews from the layout
+        sensorManager = requireContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val sensorList = sensorManager.getSensorList(Sensor.TYPE_ALL)
+        Log.d("DashboardFragment", "Available sensors: ${sensorList.joinToString { it.name }}")
 
-        // TODO
-        // Get the SensorManager instance
-        // Get list of all Sensors
-        // LOG it
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
-        // TODO
-        // Get sensor instances
+        if (accelerometer == null) {
+            Toast.makeText(context, "Accelerometer not available", Toast.LENGTH_SHORT).show()
+        }
 
-        // TODO
-        // Check if Sensors available
-        // Toast Message if Sensor not available
+        if (gyroscope == null) {
+            Toast.makeText(context, "Gyroscope not available", Toast.LENGTH_SHORT).show()
+        }
 
-        // TODO
-        // Define SensorEventListeners
-
-        // TODO
-        // Register listeners
-
+        if (checkPermission()) {
+            registerSensors()
+        } else {
+            requestPermission()
+        }
     }
 
-    // TODO
-    // checkPermission for the SENSORS
+    private fun checkPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.BODY_SENSORS
+        ) == PackageManager.PERMISSION_GRANTED
+    }
 
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.BODY_SENSORS),
+            PERMISSION_REQUEST_CODE
+        )
+    }
 
-    // TODO
-    // Callback for the result from requesting permissions
+    private fun registerSensors() {
+        accelerometer?.let {
+            sensorManager.registerListener(
+                accelerometerListener,
+                it,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+        }
 
+        gyroscope?.let {
+            sensorManager.registerListener(
+                gyroscopeListener,
+                it,
+                SensorManager.SENSOR_DELAY_NORMAL
+            )
+        }
+    }
 
-    // TODO
-    // Declare Request codes for permissions
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                registerSensors()
+            } else {
+                Toast.makeText(context, "Sensor permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(accelerometerListener)
+        sensorManager.unregisterListener(gyroscopeListener)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 1001
     }
 }

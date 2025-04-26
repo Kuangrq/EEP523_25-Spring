@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/navigation_camera"
+        android:icon="@android:drawable/ic_menu_camera"
+        android:title="Camera" />
+    <item
+        android:id="@+id/navigation_draw"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Draw" />
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@android:drawable/ic_menu_info_details"
+        android:title="Sensors" />
+
     <!-- TODO: Add items -->
 
 </menu>
