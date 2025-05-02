@@ -17,20 +17,26 @@
         android:layout_marginBottom="16dp"
         android:background="#000" />
 
-    <Button
-        android:id="@+id/captureButton"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="拍照"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp" />
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="16dp">
 
-    <Button
-        android:id="@+id/switchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="切换摄像头"
-        android:layout_gravity="center_horizontal" />
+        <Button
+            android:id="@+id/captureButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capture"
+            android:layout_marginEnd="16dp" />
+
+        <Button
+            android:id="@+id/switchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Switch" />
+    </LinearLayout>
 
     <!-- TODO: Add PreviewView to view image -->
     <!-- TODO: Add Button to switch camera -->
