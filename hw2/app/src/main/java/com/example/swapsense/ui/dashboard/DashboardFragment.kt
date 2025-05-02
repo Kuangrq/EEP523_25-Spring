@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import android.widget.Toast
+import android.os.Build
 
 class DashboardFragment : Fragment() {
 
@@ -58,6 +59,8 @@ class DashboardFragment : Fragment() {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     }
 
+    private val SENSOR_PERMISSION_CODE = 1002
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -92,7 +95,15 @@ class DashboardFragment : Fragment() {
             Toast.makeText(context, "Gyroscope sensor not available", Toast.LENGTH_SHORT).show()
         }
 
-        registerSensors()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf(android.Manifest.permission.BODY_SENSORS), SENSOR_PERMISSION_CODE)
+            } else {
+                registerSensors()
+            }
+        } else {
+            registerSensors()
+        }
     }
 
     private fun registerSensors() {
@@ -129,6 +140,17 @@ class DashboardFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == SENSOR_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                registerSensors()
+            } else {
+                Toast.makeText(context, "需要传感器权限才能正常使用！", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     companion object {
