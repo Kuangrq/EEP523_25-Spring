@@ -18,29 +18,30 @@
         android:scaleType="fitCenter"
         android:background="#EEE" />
 
-    <Button
-        android:id="@+id/selectButton"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="choose"
+        android:orientation="horizontal"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp" />
-
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="save"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp" />
-
-    <Button
-        android:id="@+id/resetButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="reset"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp">
+        <Button
+            android:id="@+id/selectButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="choose"
+            android:layout_marginEnd="8dp" />
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="save"
+            android:layout_marginEnd="8dp" />
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="reset" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -49,17 +50,25 @@
         android:layout_gravity="center_horizontal">
         <Button
             android:id="@+id/blackButton"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:background="#000000"
-            android:text=""
+            android:backgroundTint="@null"
+            android:text="black"
+            android:textColor="#FFFFFF"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:layout_marginEnd="8dp" />
         <Button
             android:id="@+id/redButton"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:background="#FF0000"
-            android:text="" />
+            android:backgroundTint="@null"
+            android:text="red"
+            android:textColor="#FFFFFF"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp" />
     </LinearLayout>
 
     <!-- TODO: Add DrawingImageView -->
