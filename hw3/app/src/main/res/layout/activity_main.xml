@@ -1,2 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 城市输入框 -->
+    <EditText
+        android:id="@+id/etCityName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="请输入城市名"
+        android:inputType="textPersonName" />
+
+    <!-- 查询按钮 -->
+    <Button
+        android:id="@+id/btnSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="查询天气" />
+
+    <!-- 错误信息提示区 -->
+    <TextView
+        android:id="@+id/tvError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FF0000"
+        android:visibility="gone"
+        android:text="" />
+
+    <!-- 天气信息展示区 -->
+    <LinearLayout
+        android:id="@+id/weatherInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="16dp">
+
+        <TextView android:id="@+id/tvCity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="城市：" />
+        <TextView android:id="@+id/tvTemp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="温度：" />
+        <TextView android:id="@+id/tvCondition" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="天气状况：" />
+        <TextView android:id="@+id/tvTempRange" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="最高/最低温：" />
+        <TextView android:id="@+id/tvSunrise" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="日出时间：" />
+        <TextView android:id="@+id/tvSunset" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="日落时间：" />
+        <TextView android:id="@+id/tvWind" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="风速：" />
+        <TextView android:id="@+id/tvPressure" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="气压：" />
+        <TextView android:id="@+id/tvHumidity" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="湿度：" />
+    </LinearLayout>
+
+</LinearLayout>
+
 <!--TODO-->
 <!--Layout as per Figma Design-->

@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation ("com.google.code.gson:gson:2.10.1")
     //TODO
     // add gson dependency
     testImplementation(libs.junit)
