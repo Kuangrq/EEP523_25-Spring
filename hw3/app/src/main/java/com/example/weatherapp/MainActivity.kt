@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     runOnUiThread {
-                        showError("City not found or network error (code: $responseCode)")
+                        showError("City not found! (code: $responseCode)")
                     }
                 }
                 connection.disconnect()
