@@ -36,12 +36,12 @@ import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
 
-    // API Key（请替换为你自己的 OpenWeatherMap API Key）
+    // API Key (Please replace with your own OpenWeatherMap API Key)
     private val API_KEY = "876a5f2eea68a896a599b01d69d1d59d"
-    private val BASE_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&lang=zh_cn&appid=$API_KEY&q="
+    private val BASE_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&lang=en&appid=$API_KEY&q="
     private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
-    // 控件声明
+    // Widget declarations
     private lateinit var etCityName: EditText
     private lateinit var btnSearch: Button
     private lateinit var tvError: TextView
@@ -49,7 +49,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvCity: TextView
     private lateinit var tvTemp: TextView
     private lateinit var tvCondition: TextView
-    private lateinit var tvTempRange: TextView
+    private lateinit var tvTempMin: TextView
+    private lateinit var tvTempMax: TextView
     private lateinit var tvSunrise: TextView
     private lateinit var tvSunset: TextView
     private lateinit var tvWind: TextView
@@ -76,7 +77,8 @@ class MainActivity : AppCompatActivity() {
         tvCity = findViewById(R.id.tvCity)
         tvTemp = findViewById(R.id.tvTemp)
         tvCondition = findViewById(R.id.tvCondition)
-        tvTempRange = findViewById(R.id.tvTempRange)
+        tvTempMin = findViewById(R.id.tvTempMin)
+        tvTempMax = findViewById(R.id.tvTempMax)
         tvSunrise = findViewById(R.id.tvSunrise)
         tvSunset = findViewById(R.id.tvSunset)
         tvWind = findViewById(R.id.tvWind)
@@ -107,7 +109,7 @@ class MainActivity : AppCompatActivity() {
             val city = etCityName.text.toString().trim()
             dismissKeyboard()
             if (city.isEmpty()) {
-                showError("城市名不能为空")
+                showError("City name cannot be empty")
                 return@setOnClickListener
             }
             tvError.visibility = View.GONE
@@ -161,14 +163,14 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     runOnUiThread {
-                        showError("城市未找到或网络错误 (code: $responseCode)")
+                        showError("City not found or network error (code: $responseCode)")
                     }
                 }
                 connection.disconnect()
             } catch (e: Exception) {
                 e.printStackTrace()
                 runOnUiThread {
-                    showError("请求失败：" + (e.message ?: "未知错误"))
+                    showError("Request failed: " + (e.message ?: "Unknown error"))
                 }
             }
         }
@@ -184,21 +186,22 @@ class MainActivity : AppCompatActivity() {
     // 显示天气信息
     private fun showWeatherInfo(data: CurrentWeatherResponse?) {
         if (data == null || data.cod != 200) {
-            showError("未能获取天气信息")
+            showError("Failed to get weather information")
             return
         }
         tvError.visibility = View.GONE
         weatherInfoLayout.visibility = View.VISIBLE
-        tvCity.text = "城市：${data.name ?: "-"}"
-        tvTemp.text = "温度：${data.main?.temp?.toInt() ?: "-"} ℃"
+        tvCity.text = "${data.name ?: "-"}"
+        tvTemp.text = "${data.main?.temp?.toInt() ?: "-"} ℃"
         val condition = data.weather?.getOrNull(0)?.description ?: "-"
-        tvCondition.text = "天气状况：$condition"
-        tvTempRange.text = "最高/最低温：${data.main?.tempMax?.toInt() ?: "-"} / ${data.main?.tempMin?.toInt() ?: "-"} ℃"
-        tvSunrise.text = "日出时间：${formatTime(data.sys?.sunrise)}"
-        tvSunset.text = "日落时间：${formatTime(data.sys?.sunset)}"
-        tvWind.text = "风速：${data.wind?.speed ?: "-"} m/s"
-        tvPressure.text = "气压：${data.main?.pressure ?: "-"} hPa"
-        tvHumidity.text = "湿度：${data.main?.humidity ?: "-"} %"
+        tvCondition.text = condition
+        tvTempMin.text = "Min: ${data.main?.tempMin?.toInt() ?: "-"} ℃"
+        tvTempMax.text = "Max: ${data.main?.tempMax?.toInt() ?: "-"} ℃"
+        tvSunrise.text = formatTime(data.sys?.sunrise)
+        tvSunset.text = formatTime(data.sys?.sunset)
+        tvWind.text = "${data.wind?.speed ?: "-"} m/s"
+        tvPressure.text = "${data.main?.pressure ?: "-"} hPa"
+        tvHumidity.text = "${data.main?.humidity ?: "-"} %"
     }
 
     // 时间戳转本地时间字符串
@@ -208,24 +211,6 @@ class MainActivity : AppCompatActivity() {
         return sdf.format(Date(timestamp * 1000))
     }
 
-    // TODO
-    // Write a function to update Error Screen
-    // Make sure you update UI on main Thread
-    // Hint:  runOnUiThread {
-    //            kotlin.run {
-    //              Write update code
-    //          }
-    //        }
-
-
-    // TODO
-    // Write a function to update Error Screen
-    // Make sure you update UI on main Thread
-    // Hint:  runOnUiThread {
-    //            kotlin.run {
-    //              Write update code
-    //          }
-    //        }
 
     // 检查网络是否可用
     private fun checkNetworkAvailable(): Boolean {
@@ -247,10 +232,10 @@ class MainActivity : AppCompatActivity() {
         if (location != null) {
             val lat = location.latitude
             val lon = location.longitude
-            val url = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&lang=zh_cn&appid=$API_KEY"
+            val url = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&lang=en&appid=$API_KEY"
             fetchWeatherData(url).start()
         } else {
-            showError("无法获取当前位置，请手动输入城市名")
+            showError("Unable to get current location, please enter city name manually")
         }
     }
 
@@ -261,7 +246,7 @@ class MainActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocationWeather()
             } else {
-                showError("未授权定位，无法获取当前位置天气")
+                showError("Location permission denied, cannot get current location weather")
             }
         }
     }
