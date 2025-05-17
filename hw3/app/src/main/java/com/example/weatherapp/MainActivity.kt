@@ -2,6 +2,8 @@ package com.example.weatherapp
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +26,12 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     // API Key（请替换为你自己的 OpenWeatherMap API Key）
     private val API_KEY = "876a5f2eea68a896a599b01d69d1d59d"
     private val BASE_URL = "https://api.openweathermap.org/data/2.5/weather?units=metric&lang=zh_cn&appid=$API_KEY&q="
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
 
     // 控件声明
     private lateinit var etCityName: EditText
@@ -79,18 +88,30 @@ class MainActivity : AppCompatActivity() {
         // 初始隐藏天气信息
         weatherInfoLayout.visibility = View.GONE
 
+        // 启动时检测网络
+        if (!checkNetworkAvailable()) {
+            showError("Please connect to internet")
+        }
+
+        // 启动时尝试获取当前位置天气
+        if (checkNetworkAvailable()) {
+            getCurrentLocationWeather()
+        }
+
         // 查询按钮监听
         btnSearch.setOnClickListener {
+            if (!checkNetworkAvailable()) {
+                showError("Please connect to internet")
+                return@setOnClickListener
+            }
             val city = etCityName.text.toString().trim()
             dismissKeyboard()
             if (city.isEmpty()) {
                 showError("城市名不能为空")
                 return@setOnClickListener
             }
-            // 隐藏错误信息，显示加载中（可选）
             tvError.visibility = View.GONE
             weatherInfoLayout.visibility = View.GONE
-            // 发起天气查询
             val url = BASE_URL + city
             fetchWeatherData(url).start()
         }
@@ -205,5 +226,44 @@ class MainActivity : AppCompatActivity() {
     //              Write update code
     //          }
     //        }
+
+    // 检查网络是否可用
+    private fun checkNetworkAvailable(): Boolean {
+        val cm = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetwork ?: return false
+        val capabilities = cm.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
+    // 获取当前位置并查询天气
+    private fun getCurrentLocationWeather() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+            return
+        }
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val location: Location? = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+            ?: locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        if (location != null) {
+            val lat = location.latitude
+            val lon = location.longitude
+            val url = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&lang=zh_cn&appid=$API_KEY"
+            fetchWeatherData(url).start()
+        } else {
+            showError("无法获取当前位置，请手动输入城市名")
+        }
+    }
+
+    // 处理权限申请结果
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocationWeather()
+            } else {
+                showError("未授权定位，无法获取当前位置天气")
+            }
+        }
+    }
 
 }
