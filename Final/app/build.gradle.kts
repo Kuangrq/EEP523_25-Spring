@@ -56,4 +56,13 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    // Google Maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    // Google Maps Compose
+    implementation("com.google.maps.android:maps-compose:2.11.4")
+    // Google Play Services Location
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+    // Retrofit2 for network requests
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }
