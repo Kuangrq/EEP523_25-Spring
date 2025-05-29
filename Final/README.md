@@ -72,7 +72,7 @@ Smart Traffic Assistant successfully addresses the need for real-time transit an
 
 The following image is a screenshot of the UI prototype for Smart Traffic Assistant:
 
-![UI Prototype](../materials/Final_UI%20Design.png)
+![UI Prototype](materials/Final_UIDesign.png)
 
 # IX. Demo Video
 
@@ -90,8 +90,8 @@ https://youtube.com/shorts/RwW1wd5Zqnc?feature=share
 Below are screenshots of the Smart Traffic Assistant app in action:
 
 <p align="center">
-  <img src="../interface_1.jpg" alt="Map View" width="45%" style="border:4px solid black; margin-right:10px;"/>
-  <img src="../interface_2.jpg" alt="History View" width="45%" style="border:4px solid black;"/>
+  <img src="materials/Final_screenshot_1.jpg" alt="Map View" width="45%" style="border:4px solid black; margin-right:10px;"/>
+  <img src="materials/Final_screenshot_2.jpg" alt="History View" width="45%" style="border:4px solid black;"/>
 </p>
 
 - Left: Map view with real-time traffic and transit stations
