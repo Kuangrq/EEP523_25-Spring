@@ -66,6 +66,16 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Box
 import android.content.Context
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.PaddingValues
 
 class MainActivity : ComponentActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -95,7 +105,7 @@ fun MapScreen(
     fusedLocationClient: FusedLocationProviderClient,
     activity: ComponentActivity
 ) {
-    val defaultLocation = LatLng(39.9087, 116.3975) // 北京天安门
+    val defaultLocation = LatLng(39.9087, 116.3975) // Beijing Tiananmen
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(defaultLocation, 12f)
@@ -103,22 +113,22 @@ fun MapScreen(
     val coroutineScope = rememberCoroutineScope()
     var hasLocationPermission by remember { mutableStateOf(false) }
     var places by remember { mutableStateOf<List<com.example.afinal.PlaceResult>>(emptyList()) }
-    var history by rememberSaveable { mutableStateOf<List<List<com.example.afinal.PlaceResult>>>(emptyList()) }
+    var history by rememberSaveable { mutableStateOf<List<com.example.afinal.PlaceResult>>(emptyList()) }
     var selectedTab by rememberSaveable { mutableStateOf(0) }
     var selectedPlace by remember { mutableStateOf<com.example.afinal.PlaceResult?>(null) }
-    // 加速度计相关
+    // Accelerometer related
     val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
     var lastRefreshTime by remember { mutableStateOf(0L) }
     var lastAccel by remember { mutableStateOf(0f) }
     var lastAccelFiltered by remember { mutableStateOf(0f) }
-    val REFRESH_INTERVAL = 10_000L // 10秒
-    val ACCEL_THRESHOLD = 1.5f // 运动判定阈值
+    val REFRESH_INTERVAL = 10_000L // 10 seconds
+    val ACCEL_THRESHOLD = 1.5f // Movement threshold
     val snackbarHostState = remember { SnackbarHostState() }
     var isLoading by remember { mutableStateOf(false) }
     var errorMsg by remember { mutableStateOf("") }
 
-    // 加速度计监听
+    // Accelerometer listener
     DisposableEffect(Unit) {
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
@@ -132,7 +142,7 @@ fun MapScreen(
                 val now = System.currentTimeMillis()
                 if (lastAccelFiltered > ACCEL_THRESHOLD && now - lastRefreshTime > REFRESH_INTERVAL) {
                     lastRefreshTime = now
-                    // 触发刷新
+                    // Trigger refresh
                     if (hasLocationPermission) {
                         fusedLocationClient.getCurrentLocation(
                             com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
@@ -144,7 +154,7 @@ fun MapScreen(
                                 coroutineScope.launch {
                                     cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
                                 }
-                                // 获取附近公交/地铁站点
+                                // Fetch nearby transit stations
                                 val locStr = "${it.latitude},${it.longitude}"
                                 val retrofit = Retrofit.Builder()
                                     .baseUrl("https://maps.googleapis.com/")
@@ -159,9 +169,6 @@ fun MapScreen(
                                         ) {
                                             if (response.isSuccessful) {
                                                 places = response.body()?.results ?: emptyList()
-                                                if (places.isNotEmpty()) {
-                                                    history = (listOf(places) + history).take(3)
-                                                }
                                             }
                                         }
                                         override fun onFailure(call: Call<com.example.afinal.PlacesResponse>, t: Throwable) {}
@@ -179,7 +186,7 @@ fun MapScreen(
         }
     }
 
-    // Retrofit初始化
+    // Retrofit initialization
     val retrofit = remember {
         Retrofit.Builder()
             .baseUrl("https://maps.googleapis.com/")
@@ -188,7 +195,7 @@ fun MapScreen(
     }
     val placesApi = remember { retrofit.create(com.example.afinal.PlacesApiService::class.java) }
 
-    // 检查并请求定位权限
+    // Check and request location permission
     LaunchedEffect(Unit) {
         val fine = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION)
         val coarse = ContextCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -202,7 +209,7 @@ fun MapScreen(
         }
     }
 
-    // 封装刷新逻辑
+    // Encapsulated refresh logic
     fun refreshNearbyStations() {
         if (hasLocationPermission) {
             isLoading = true
@@ -216,7 +223,7 @@ fun MapScreen(
                     coroutineScope.launch {
                         cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
                     }
-                    // 获取附近公交/地铁站点
+                    // Fetch nearby transit stations
                     val locStr = "${it.latitude},${it.longitude}"
                     val retrofit = Retrofit.Builder()
                         .baseUrl("https://maps.googleapis.com/")
@@ -232,46 +239,43 @@ fun MapScreen(
                                 isLoading = false
                                 if (response.isSuccessful) {
                                     places = response.body()?.results ?: emptyList()
-                                    if (places.isNotEmpty()) {
-                                        history = (listOf(places) + history).take(3)
-                                    }
                                 } else {
-                                    errorMsg = "获取公交信息失败"
+                                    errorMsg = "Failed to fetch transit stations."
                                     coroutineScope.launch { snackbarHostState.showSnackbar(errorMsg) }
                                 }
                             }
                             override fun onFailure(call: Call<com.example.afinal.PlacesResponse>, t: Throwable) {
                                 isLoading = false
-                                errorMsg = "网络请求失败"
+                                errorMsg = "Network request failed."
                                 coroutineScope.launch { snackbarHostState.showSnackbar(errorMsg) }
                             }
                         })
                 } ?: run {
                     isLoading = false
-                    errorMsg = "无法获取当前位置"
+                    errorMsg = "Failed to get current location."
                     coroutineScope.launch { snackbarHostState.showSnackbar(errorMsg) }
                 }
             }.addOnFailureListener {
                 isLoading = false
-                errorMsg = "定位失败"
+                errorMsg = "Location failed."
                 coroutineScope.launch { snackbarHostState.showSnackbar(errorMsg) }
             }
         } else {
-            errorMsg = "请先授予定位权限"
+            errorMsg = "Please grant location permission first."
             coroutineScope.launch { snackbarHostState.showSnackbar(errorMsg) }
         }
     }
 
-    // 首次进入自动刷新
+    // Auto refresh on first enter
     LaunchedEffect(hasLocationPermission) {
         if (hasLocationPermission) {
             refreshNearbyStations()
         }
     }
 
-    // 计算距离
+    // Calculate distance
     fun calcDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Int {
-        val r = 6371000.0 // 地球半径，米
+        val r = 6371000.0 // Earth radius, meters
         val dLat = Math.toRadians(lat2 - lat1)
         val dLng = Math.toRadians(lng2 - lng1)
         val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -281,80 +285,105 @@ fun MapScreen(
         return (r * c).roundToInt()
     }
 
-    // Tab切换栏
-    TabRow(selectedTabIndex = selectedTab) {
-        Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("实时") })
-        Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("历史") })
-    }
-    if (selectedTab == 0) {
-        // 实时视图
-        GoogleMap(
-            modifier = modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = MapProperties(
-                isMyLocationEnabled = hasLocationPermission,
-                isTrafficEnabled = true
-            )
-        ) {
-            // 标注公交/地铁站点
-            places.forEach { place ->
-                val dist = if (userLocation != null) calcDistance(
-                    userLocation!!.latitude, userLocation!!.longitude,
-                    place.geometry.location.lat, place.geometry.location.lng
-                ) else null
-                Marker(
-                    state = com.google.maps.android.compose.MarkerState(
-                        position = LatLng(
-                            place.geometry.location.lat,
-                            place.geometry.location.lng
-                        )
-                    ),
-                    title = place.name + (if (dist != null) "  距离：${dist}米" else ""),
-                    onClick = {
-                        selectedPlace = place
-                        false // 让InfoWindow弹出
-                    }
-                )
-            }
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Top Tab bar
+        TabRow(selectedTabIndex = selectedTab) {
+            Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text("Live") })
+            Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text("History") })
         }
-        // 不再显示下方列表
-        // 点击Marker时可选弹窗（如需更丰富内容可加）
-    } else {
-        // 历史视图
-        LazyColumn(modifier = Modifier.padding(8.dp)) {
-            items(history) { record ->
-                val first = record.firstOrNull()
-                Card(
-                    modifier = Modifier.padding(vertical = 4.dp).clickable {
-                        // 点击定位到该历史记录第一个站点
-                        first?.let {
-                            coroutineScope.launch {
-                                cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(it.geometry.location.lat, it.geometry.location.lng), 15f
-                                ))
+        // Map and content area
+        Box(modifier = Modifier.weight(1f)) {
+            if (selectedTab == 0) {
+                // Live view
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState,
+                    properties = MapProperties(
+                        isMyLocationEnabled = hasLocationPermission,
+                        isTrafficEnabled = true
+                    ),
+                    uiSettings = com.google.maps.android.compose.MapUiSettings(
+                        myLocationButtonEnabled = false
+                    )
+                ) {
+                    // Markers for transit stations
+                    places.forEach { place ->
+                        val dist = if (userLocation != null) calcDistance(
+                            userLocation!!.latitude, userLocation!!.longitude,
+                            place.geometry.location.lat, place.geometry.location.lng
+                        ) else null
+                        Marker(
+                            state = com.google.maps.android.compose.MarkerState(
+                                position = LatLng(
+                                    place.geometry.location.lat,
+                                    place.geometry.location.lng
+                                )
+                            ),
+                            title = place.name + (if (dist != null) "  Distance: ${dist}m" else ""),
+                            onClick = {
+                                selectedPlace = place
+                                // Add to history (no duplicates)
+                                if (!history.any { it.name == place.name && it.geometry.location.lat == place.geometry.location.lat && it.geometry.location.lng == place.geometry.location.lng }) {
+                                    history = history + place
+                                }
+                                false // Show InfoWindow
+                            }
+                        )
+                    }
+                }
+                // Bottom left refresh button
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Button(
+                        onClick = { refreshNearbyStations() },
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(16.dp),
+                        shape = MaterialTheme.shapes.small,
+                        contentPadding = PaddingValues(8.dp)
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
+                    }
+                }
+            } else {
+                // History view
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Top right clear button
+                    Button(
+                        onClick = { history = emptyList() },
+                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
+                        shape = MaterialTheme.shapes.small,
+                        contentPadding = PaddingValues(8.dp)
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = "Clear history")
+                    }
+                    LazyColumn(modifier = Modifier.padding(8.dp)) {
+                        items(history) { place ->
+                            Card(
+                                modifier = Modifier.padding(vertical = 4.dp).clickable {
+                                    // Locate to this history station
+                                    coroutineScope.launch {
+                                        cameraPositionState.animate(CameraUpdateFactory.newLatLngZoom(
+                                            LatLng(place.geometry.location.lat, place.geometry.location.lng), 15f
+                                        ))
+                                    }
+                                },
+                                elevation = CardDefaults.cardElevation(2.dp)
+                            ) {
+                                Text(text = "${place.name}", modifier = Modifier.padding(8.dp))
                             }
                         }
-                    },
-                    elevation = CardDefaults.cardElevation(2.dp)
-                ) {
-                    Text(text = "历史记录：${first?.name ?: "无"}", modifier = Modifier.padding(8.dp))
+                    }
                 }
             }
+            // Loading indicator
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
+            // Error message
+            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
-    // 手动刷新按钮
-    Box(modifier = Modifier.fillMaxSize()) {
-        Button(onClick = { refreshNearbyStations() }, modifier = Modifier.align(Alignment.TopEnd).padding(16.dp)) {
-            Text("手动刷新")
-        }
-        // 加载中指示器
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        }
-        // 错误提示
-        SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
-    }
-    // 权限处理优化
+    // Permission handling
     if (!hasLocationPermission) {
         Box(modifier = Modifier.fillMaxSize()) {
             Button(onClick = {
@@ -364,10 +393,10 @@ fun MapScreen(
                     1001
                 )
             }, modifier = Modifier.align(Alignment.Center)) {
-                Text("请求定位权限")
+                Text("Request location permission")
             }
             Text(
-                text = "未授予定位权限，部分功能不可用。请在设置中允许定位权限。",
+                text = "Location permission not granted. Some features are unavailable. Please allow location permission in settings.",
                 modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)
             )
         }
