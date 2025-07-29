@@ -8,7 +8,7 @@ This repository contains the complete coursework for the **Mobile Application De
 
 The course is organized into weekly lectures and hands-on projects that progressively build Android development skills:
 
-### 📚 Course Materials
+### Course Materials
 - **Week 1-8**: Comprehensive lecture slides covering Android fundamentals to advanced topics
   - Week 1: Introduction to Android Development and Kotlin
   - Week 2: Android UI Fundamentals and Layouts
@@ -21,9 +21,9 @@ The course is organized into weekly lectures and hands-on projects that progress
 - **Hands-on Projects**: Practical implementation of concepts learned in lectures
 - **Final Project**: A comprehensive Android application demonstrating all learned skills
 
-## 🚀 Projects Overview
+## Projects Overview
 
-### 📚 In-Class Tutorial Exercises (ICTE)
+### In-Class Tutorial Exercises (ICTE)
 *Hands-on practice sessions during lectures*
 
 #### 1. ICTE2 - Hello Button App
@@ -117,7 +117,7 @@ The course is organized into weekly lectures and hands-on projects that progress
 - Network type detection (WiFi vs Cellular)
 - Settings persistence with SharedPreferences
 
-### 📝 Homework Assignments (HW)
+### Homework Assignments (HW)
 *Comprehensive projects demonstrating advanced concepts*
 
 #### 1. HW1 - Todo List Application
@@ -168,7 +168,7 @@ The course is organized into weekly lectures and hands-on projects that progress
 - Background thread processing for API calls
 - Keyboard management and UI responsiveness
 
-### 🎯 Final Project - Smart Traffic Assistant
+### Final Project - Smart Traffic Assistant
 **Skills Demonstrated:**
 - Advanced API integration (Google Maps, Google Places)
 - Device sensor utilization (accelerometer)
@@ -184,7 +184,7 @@ The course is organized into weekly lectures and hands-on projects that progress
 - Interactive map with traffic overlays
 - Tabbed interface (Live/History views)
 
-## 🛠️ Technologies & Tools Used
+## Technologies & Tools Used
 
 ### Core Technologies
 - **Kotlin**: Primary programming language
@@ -215,7 +215,7 @@ The course is organized into weekly lectures and hands-on projects that progress
 - **Git**: Version control
 - **Figma**: UI/UX design prototyping
 
-## 📱 Key Learning Outcomes
+## Key Learning Outcomes
 
 ### Technical Skills
 1. **Android Development Fundamentals**
@@ -246,7 +246,7 @@ The course is organized into weekly lectures and hands-on projects that progress
 - **Testing**: Multi-device testing and debugging
 - **User Experience**: Intuitive UI/UX design
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 EEP523_25Spring/
