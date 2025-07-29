@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- activity_main.xml: This is the MAIN LAYOUT FILE for your application.
+     It includes a RecyclerView for displaying the list of tasks and a FloatingActionButton for adding new tasks. -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- TextView to display the number of tasks -->
+    <TextView
+        android:id="@+id/tvTaskCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#F0F0F0"
+        android:padding="8dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="@string/tasks_count" />
+
+    <!-- RecyclerView to display the list of tasks -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTasks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tvTaskCount"
+        android:contentDescription="@string/tasks_list_description"
+        tools:listitem="@layout/task_item_cell"
+        android:descendantFocusability="blocksDescendants" />
+
+    <!-- FloatingActionButton for adding new tasks -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabNewTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add"
+        android:contentDescription="@string/add_new_task" />
+
+</RelativeLayout>

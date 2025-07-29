@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- fragment_new_task_sheet.xml: This layout is for creating a new task.
+     It includes input fields for task details and buttons to save the task and set a deadline. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- Title for the new task sheet -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Task"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- EditText for task title -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTaskTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- EditText for task description -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etTaskDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:minLines="2"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Button to set a deadline -->
+    <Button
+        android:id="@+id/btnSetDeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SELECT TIME"
+        android:textColor="@color/purple_500"
+        android:backgroundTint="@android:color/white"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+    <!-- Button to save the task -->
+    <Button
+        android:id="@+id/btnSaveTask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SAVE"
+        android:backgroundTint="@color/purple_500"/>
+
+</LinearLayout>

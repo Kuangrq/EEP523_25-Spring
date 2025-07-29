@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <!-- Button toolbar at top -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <!-- Color selection buttons -->
+        <Button
+            android:id="@+id/blackButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#000000"
+            android:text="Black"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/redButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#FF0000"
+            android:text="Red"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/blueButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="#0000FF"
+            android:text="Blue"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Clear" />
+    </LinearLayout>
+
+    <!-- Drawing area -->
+    <com.example.drawingapp.DrawingView
+        android:id="@+id/drawingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#EFEFEF" />
+
+</LinearLayout>

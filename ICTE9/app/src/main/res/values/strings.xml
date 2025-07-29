@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart News Fetcher</string>
+    <string name="allow_cellular">Allow cellular data for news updates</string>
+    <string name="refresh">Refresh News</string>
+</resources>
